@@ -1,5 +1,6 @@
 import {Config} from '@oclif/core'
 import axios, {AxiosError, AxiosInstance, AxiosResponse} from 'axios'
+import debug from 'debug'
 
 import APIError from './error.js'
 import {
@@ -11,6 +12,8 @@ import {
   VersionRequest,
   VersionResponse,
   WithDiff,
+  WorkflowVersionRequest,
+  WorkflowVersionResponse,
 } from './models.js'
 import {vars} from './vars.js'
 
@@ -45,11 +48,26 @@ class BumpApi {
       headers: this.authorizationHeader(token),
     })
 
+  // chelou, le token envoyé n'est pas reçu pareil par notre API
+  public postWorkflowVersion = (
+    body: WorkflowVersionRequest,
+    token: string,
+  ): Promise<AxiosResponse<WorkflowVersionResponse>> =>
+    this.client.post<WorkflowVersionResponse>('/workflow/versions', body, {
+      headers: this.authorizationTokenHeader(token),
+    })
+
   public putPreview = (versionId: string, body?: PreviewRequest): Promise<AxiosResponse<PreviewResponse>> =>
     this.client.put<PreviewResponse>(`/previews/${versionId}`, body)
 
   private authorizationHeader = (token: string) => ({
     Authorization: `Basic ${Buffer.from(token).toString('base64')}`,
+  })
+
+  // eslint-disable-next-line no-warning-comments
+  // TODO: favor authorizationTokenHeader for all other requests, dedicated PR
+  private authorizationTokenHeader = (token: string) => ({
+    Authorization: `Token ${token}`,
   })
 
   private handleError = (error: AxiosError) => Promise.reject(new APIError(error))

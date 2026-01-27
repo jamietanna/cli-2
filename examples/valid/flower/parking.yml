@@ -1,7 +1,5 @@
 flower: "0.1"
 id: parking
-# info:
-#   foo: bar
 title: Get live information about Angers' parkings
 description: >
   This flow set allows a person living in Angers, France, to get access to the live number of remaining slots in local parkings.
